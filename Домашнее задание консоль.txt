@@ -1,0 +1,58 @@
+>>> from django.contrib.auth.models import User
+>>> User1 = User.objects.create_user(username='Fedor', password='1234', first_name='Fedor', last_name='Petrov', email='f.petrov@mail.ru', is_staff=True, is_active=True)
+>>> User2 = User.objects.create_user(username='Pavel', password='4321', first_name='Pavel', last_name='Ivanov', email='p.ivanov@mail.ru', is_staff=False, is_active=True)
+>>> from news.models import Author
+>>> Author1 = Author.objects.create(name='Fedor Petrov', user=User1)
+>>> Author2 = Author.objects.create(name='Pavel Ivanov', user=User2)
+>>> from news.models import Category
+>>> Category1 = Category.objects.create(name='Sport')
+>>> Category2 = Category.objects.create(name='Culture')
+>>> Category3 = Category.objects.create(name='Entertament')
+>>> Category4 = Category.objects.create(name='Politics')
+>>> from news.models import Post
+>>> Post1 = Post.objects.create(author=Author1, type=Post.article, title='Battle for Championship!', text='bla-bla-bla')
+>>> Post2 = Post.objects.create(author=Author1, type=Post.article, title='New exhibition of Art', text='bla-bla-bla')
+>>> Post3 = Post.objects.create(author=Author1, type=Post.news, title='Russia under new sanction', text='bla-bla-bla')
+>>> Post1.category.add(Category1)
+>>> Post1.category.add(Category3)
+>>> Post2.category.add(Category2)
+>>> Post2.category.add(Category3)
+>>> Post3.category.add(Category4)
+>>> from news.models import Comment
+>>> Comment1 = Comment.objects.create(post=Post1, user=User2, text='bla-bla-bla')
+>>> Comment2 = Comment.objects.create(post=Post2, user=User2, text='bla-bla-bla')
+>>> Comment3 = Comment.objects.create(post=Post3, user=User2, text='bla-bla-bla')
+>>> Comment4 = Comment.objects.create(post=Post1, user=User2, text='bla-bla-bla-bla-bla')
+>>> Post1.like()
+>>> Post1.like()
+>>> Post1.dislike()
+>>> Post2.like()
+>>> Post2.like()
+>>> Post2.like()
+>>> Post3.dislike()
+>>> Post3.dislike()
+>>> Post3.dislike()
+>>> Comment1.like()
+>>> Comment1.like()
+>>> Comment2.like()
+>>> Comment3.like()
+>>> Comment4.dislike()
+>>> Author1.update_rating()
+>>> Author2.update_rating()
+>>> top_rank = Author.objects.all().order_by('-rating')
+>>> print('Top rating username: '+top_rank[0].user.username+' rating:'+str(top_rank[0].rating))
+Top rating username: Fedor rating:14
+>>> top_post = Post.objects.filter(type='AR').order_by('-rating')
+>>> print('Best article date posted: '+str(top_post[0].date_posted)+', username author: '+top_post[0].author.user.username+', rating: '+str(top_post[0].rating)+', title: '+top_post[0].title+', previw article: '+top_post[0].preview())
+Best article date posted: 2021-04-21 09:19:03.251876+00:00, username author: Fedor, rating: 3, title: New exhibition of Art, previw article: bla-bla-bla...
+>>> list_of_comments = Comment.objects.filter(post=top_post[0]).values('date_posted', 'user__username', 'rating', 'text')
+<QuerySet [{'date_posted': datetime.datetime(2021, 4, 21, 9, 20, 55, 415577, tzinfo=<UTC>), 'user__username': 'Pavel', 'rating': 1, 'text': 'bla-bla-bla'}]>
+
+
+
+
+
+
+
+
+
